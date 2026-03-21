@@ -41,6 +41,7 @@ class ExcelSyncService {
         return this.lastSyncResult;
       } catch (error) {
         lastError = error;
+        console.error('Excel sync attempt failed:', error && error.message ? error.message : error);
         if (attempt < maxAttempts) {
           await sleep(150 * attempt);
         }
