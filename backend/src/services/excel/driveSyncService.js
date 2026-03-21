@@ -120,18 +120,31 @@ class DriveSyncService {
 
     const metadata = await this.driveClient.files.get({
       fileId,
-      fields: 'name'
+      fields: 'name,mimeType'
     });
 
-    const driveResponse = await this.driveClient.files.get(
-      {
-        fileId,
-        alt: 'media'
-      },
-      {
-        responseType: 'stream'
-      }
-    );
+    let streamResponse;
+    if (metadata.data.mimeType === 'application/vnd.google-apps.spreadsheet') {
+      streamResponse = await this.driveClient.files.export(
+        {
+          fileId,
+          mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        },
+        {
+          responseType: 'stream'
+        }
+      );
+    } else {
+      streamResponse = await this.driveClient.files.get(
+        {
+          fileId,
+          alt: 'media'
+        },
+        {
+          responseType: 'stream'
+        }
+      );
+    }
 
     res.setHeader(
       'Content-Type',
@@ -143,9 +156,9 @@ class DriveSyncService {
     );
 
     await new Promise((resolve, reject) => {
-      driveResponse.data.on('error', reject);
-      driveResponse.data.on('end', resolve);
-      driveResponse.data.pipe(res);
+      streamResponse.data.on('error', reject);
+      streamResponse.data.on('end', resolve);
+      streamResponse.data.pipe(res);
     });
 
     return true;
