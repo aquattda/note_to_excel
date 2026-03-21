@@ -218,15 +218,23 @@ Can thiet lap:
 	- DRIVE_SYNC_ENABLED=true
 	- GOOGLE_DRIVE_FOLDER_ID=<folder_id>
 	- GOOGLE_DRIVE_FILE_NAME=notes.xlsx
+	- GOOGLE_SERVICE_ACCOUNT_JSON_B64=<base64_of_service_account_json>
 	- GOOGLE_SERVICE_ACCOUNT_EMAIL=<service_account_email>
 	- GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY=<private_key_1_line, dung \\n cho xuong dong>
 
 Neu file da ton tai san tren Drive, co the set them:
 - GOOGLE_DRIVE_FILE_ID=<file_id>
 
+Thiet lap nhanh bang script (Windows PowerShell):
+1. Tai service account JSON ve may, vi du C:\keys\drive-sa.json
+2. Chay:
+	- powershell -ExecutionPolicy Bypass -File scripts/setup-drive-heroku.ps1 -AppName note-to-excel-ai-tree -ServiceAccountJsonPath C:\keys\drive-sa.json -DriveFolderId 1jfur-CSkDL4fsugHWp2LI-YtzSpPlT5J -DriveFileName notes.xlsx
+3. Share folder Drive cho service account email duoc in ra sau khi script chay xong
+
 Tren Heroku, cap nhat config vars:
 - heroku config:set DRIVE_SYNC_ENABLED=true
 - heroku config:set GOOGLE_DRIVE_FOLDER_ID=<folder_id>
 - heroku config:set GOOGLE_DRIVE_FILE_NAME=notes.xlsx
+- heroku config:set GOOGLE_SERVICE_ACCOUNT_JSON_B64=<base64_json>
 - heroku config:set GOOGLE_SERVICE_ACCOUNT_EMAIL=<service_account_email>
 - heroku config:set GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY="<private_key_escaped>"
