@@ -201,4 +201,32 @@ Lenh deploy:
 
 Ghi chu:
 - Heroku filesystem la ephemereal, file Excel co the mat sau restart dyno.
-- Neu can luu ben vung, can dua file Excel len object storage (S3/R2) hoac luu binary trong DB.
+- Da bo sung luu Excel len Google Drive de ben vung va khong phu thuoc filesystem local.
+
+## 14) Cau hinh Google Drive
+
+He thong sync Excel theo thu tu:
+1. Rebuild workbook tu MongoDB
+2. Ghi file local tam
+3. Upload/overwrite file notes.xlsx tren Google Drive
+
+Can thiet lap:
+1. Tao Google Cloud Service Account va bat Google Drive API
+2. Tao 1 folder tren Google Drive de chua file Excel
+3. Share folder do cho service account email (quyen Editor)
+4. Set env vars:
+	- DRIVE_SYNC_ENABLED=true
+	- GOOGLE_DRIVE_FOLDER_ID=<folder_id>
+	- GOOGLE_DRIVE_FILE_NAME=notes.xlsx
+	- GOOGLE_SERVICE_ACCOUNT_EMAIL=<service_account_email>
+	- GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY=<private_key_1_line, dung \\n cho xuong dong>
+
+Neu file da ton tai san tren Drive, co the set them:
+- GOOGLE_DRIVE_FILE_ID=<file_id>
+
+Tren Heroku, cap nhat config vars:
+- heroku config:set DRIVE_SYNC_ENABLED=true
+- heroku config:set GOOGLE_DRIVE_FOLDER_ID=<folder_id>
+- heroku config:set GOOGLE_DRIVE_FILE_NAME=notes.xlsx
+- heroku config:set GOOGLE_SERVICE_ACCOUNT_EMAIL=<service_account_email>
+- heroku config:set GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY="<private_key_escaped>"

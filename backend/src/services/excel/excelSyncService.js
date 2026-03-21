@@ -3,8 +3,9 @@ function sleep(ms) {
 }
 
 class ExcelSyncService {
-  constructor(workbookService) {
+  constructor(workbookService, driveSyncService) {
     this.workbookService = workbookService;
+    this.driveSyncService = driveSyncService;
     this.chain = Promise.resolve();
     this.lastSyncResult = {
       status: 'pending',
@@ -18,12 +19,24 @@ class ExcelSyncService {
 
     for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
       try {
-        const result = await this.workbookService.rebuildWorkbookFromDatabase();
+        const workbookResult = await this.workbookService.rebuildWorkbookFromDatabase();
+        let driveResult = {
+          status: 'disabled',
+          message: 'Google Drive sync is disabled'
+        };
+
+        if (this.driveSyncService) {
+          driveResult = await this.driveSyncService.uploadWorkbook(workbookResult.filePath);
+        }
+
         this.lastSyncResult = {
           status: 'success',
           reason,
           message: 'Excel sync completed',
-          meta: result
+          meta: {
+            workbook: workbookResult,
+            drive: driveResult
+          }
         };
         return this.lastSyncResult;
       } catch (error) {
